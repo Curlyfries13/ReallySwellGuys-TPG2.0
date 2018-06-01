@@ -33,15 +33,20 @@ class Mapper():
         else:
             data = None
             filename = file_entry['filename']
+
             if file_entry['format'] == 'xls':
                 data = pd.read_excel(filename)
-            elif file_entry == 'parquet':
+            if file_entry['format'] == 'html':
+                # html puts out a list of datasets, but these are expected to
+                # be simple single-element lists
+                data = pd.read_html(filename)[0]
+            elif file_entry['format'] == 'parquet':
                 data = pd.read_parquet(filename)
             else:
                 raise ValueError('bad parser type: {}'.format(filename))
             file_entry['dl'] = data
             file_entry['loaded'] = True
-    
+
     def list_data_names(self):
         outstring = ""
         for key, value in self._entries.items():
