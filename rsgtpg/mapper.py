@@ -48,6 +48,8 @@ class Mapper():
                 data = data.iloc[1:]
             elif file_format == 'parquet':
                 data = pd.read_parquet(filename)
+            elif file_format == 'csv':
+                data = pd.read_csv(filename)
             else:
                 raise ValueError('bad parser type: {}'.format(file_format))
             print('Data Loaded')
@@ -62,4 +64,21 @@ class Mapper():
         return outstring
 
 
+    def get_entry(self, name):
+        entry = self._entries[name]
+        return self.get_dataframe(entry)
 
+    def update_entry(self, dataframe, name):
+        entry = self._entries[name]
+        filename = entry['filename']
+        file_format = entry['format']
+        if file_format == 'xls':
+            data = dataframe.to_excel(filename)
+        elif file_format == 'html':
+            # html puts out a list of datasets, but these are expected to
+            # be simple single-element lists
+            data = dataframe.to_html(filename)
+        elif file_format == 'parquet':
+            data = dataframe.to_parquet(filename)
+        elif file_format == 'csv':
+            data = datarfame.to_csv(filename)
